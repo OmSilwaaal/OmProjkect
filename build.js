@@ -3,6 +3,7 @@ const path = require('path');
 
 const IMAGE_EXTS = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
 const APICTURES_DIR = path.join(__dirname, 'apictures');
+const TRAIL_DIR = path.join(__dirname, 'pictures_moving');
 const INDEX_HTML = path.join(__dirname, 'index.html');
 
 function toTitle(filename) {
@@ -45,13 +46,29 @@ const entries = files.map(f =>
 
 const newArray = `[\n${entries.join(',\n')}\n    ]`;
 
-let html = fs.readFileSync(INDEX_HTML, 'utf8');
-const updated = html.replace(/const PW_PHOTOS=\[[\s\S]*?\];/, `const PW_PHOTOS=${newArray};`);
+// Build TRAIL_IMAGES from pictures_moving/
+const trailFiles = fs.readdirSync(TRAIL_DIR)
+  .filter(f => IMAGE_EXTS.test(f) && !f.startsWith('.'))
+  .sort();
 
-if (updated === html) {
-  console.error('ERROR: Could not find PW_PHOTOS in index.html');
-  process.exit(1);
-}
+const trailPaths = trailFiles
+  .map(f => `'pictures_moving/${encodeURIComponent(f)}'`)
+  .join(',\n  ');
+
+const newTrail = `[\n  ${trailPaths}\n]`;
+
+let html = fs.readFileSync(INDEX_HTML, 'utf8');
+
+const R_PHOTOS = /const PW_PHOTOS=\[[\s\S]*?\];/;
+// Match only the real (multiline) TRAIL_IMAGES, not the example in the comment
+const R_TRAIL  = /const TRAIL_IMAGES\s*=\s*\[[\s\S]*?\n\];/;
+
+if (!R_PHOTOS.test(html)) { console.error('ERROR: PW_PHOTOS not found in index.html'); process.exit(1); }
+if (!R_TRAIL.test(html))  { console.error('ERROR: TRAIL_IMAGES not found in index.html'); process.exit(1); }
+
+const updated = html
+  .replace(R_PHOTOS, `const PW_PHOTOS=${newArray};`)
+  .replace(R_TRAIL,  `const TRAIL_IMAGES = ${newTrail};`);
 
 fs.writeFileSync(INDEX_HTML, updated);
-console.log(`✓ ${files.length} photos written to PW_PHOTOS`);
+console.log(`✓ ${files.length} gallery photos, ${trailFiles.length} trail images written`);
