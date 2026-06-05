@@ -172,6 +172,10 @@ body:not([data-view="home"]) .corner{display:none}
 .pw-desc{font-family:var(--mono);font-size:7px;letter-spacing:.05em;color:rgba(196,192,178,.72);margin-top:2px;line-height:1.4}
 .pw-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink);background:var(--paper);pointer-events:none;z-index:10}
 .pw-hint{margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;text-align:center}
+
+/* ── om symbol background ───────────────────────────────── */
+.om-bg{position:absolute;left:50%;top:50%;width:clamp(600px,88vw,1480px);height:auto;transform:translate(-46%,-52%) scaleX(1.52) scaleY(0.92);transform-origin:center center;opacity:.38;mix-blend-mode:multiply;pointer-events:none;z-index:0;user-select:none}
+@media(max-width:560px){.om-bg{width:clamp(420px,130vw,900px);opacity:.3}}
 </style>
 </head>
 <body data-view="home">
@@ -193,6 +197,7 @@ body:not([data-view="home"]) .corner{display:none}
   <!-- ═══ HOME ═══ -->
   <section class="view active" id="home">
     <div class="stage" id="stage">
+      <img class="om-bg" src="om-symbol.png" alt="" aria-hidden="true">
       <div class="hero-cut" aria-hidden="true"><span>everything</span><span>all at once</span></div>
       <div class="hero-note">OM · AUM&nbsp;&nbsp;ॐ<br><b>the sound of everything</b> — the whole of existence</div>
       <div class="home-hint">Select a node to enter.<br>A constellation, not a menu.</div>
