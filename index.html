@@ -461,33 +461,47 @@ const TRAIL_IMAGES = [
   {
     const PW_BASE='apictures/';
     const PW_PHOTOS=[
-      {f:'DSC00895.JPG',     n:'Architecture I',    d:'DSC · 2024'},
-      {f:'DSC00897.JPG',     n:'Architecture II',   d:'DSC · 2024'},
-      {f:'DSC00899.JPG',     n:'Urban Study I',     d:'DSC · 2024'},
-      {f:'DSC00900.JPG',     n:'Urban Study II',    d:'DSC · 2024'},
-      {f:'DSC00901.JPG',     n:'Urban Study III',   d:'DSC · 2024'},
-      {f:'IMG_0035.jpg',     n:'Candid I',          d:'Class · 2024'},
-      {f:'IMG_0520.JPG',     n:'Street Study',      d:'Class · 2024'},
-      {f:'IMG_0573.jpg',     n:'City Light I',      d:'Class · 2024'},
-      {f:'IMG_0576.jpg',     n:'City Light II',     d:'Class · 2024'},
-      {f:'IMG_0577.jpg',     n:'Light Study I',     d:'Urbex · 2024'},
-      {f:'IMG_0578.jpg',     n:'Light Study II',    d:'Urbex · 2024'},
-      {f:'IMG_0580.jpg',     n:'Texture I',         d:'Class · 2024'},
-      {f:'IMG_0581.jpg',     n:'Texture II',        d:'Class · 2024'},
-      {f:'IMG_0583 (1).jpg', n:'Composition I',     d:'Assignment · 2024'},
-      {f:'IMG_0584.jpg',     n:'Composition II',    d:'Assignment · 2024'},
-      {f:'IMG_0585.jpg',     n:'Composition III',   d:'Assignment · 2024'},
-      {f:'IMG_0586.jpg',     n:'Shadow Study I',    d:'Urbex · 2024'},
-      {f:'IMG_0587.jpg',     n:'Shadow Study II',   d:'Urbex · 2024'},
-      {f:'IMG_0589.jpg',     n:'Detail I',          d:'Class · 2024'},
-      {f:'IMG_0591.jpg',     n:'Detail II',         d:'Class · 2024'},
-      {f:'IMG_0593.jpg',     n:'Perspective I',     d:'Class · 2024'},
-      {f:'IMG_0598.jpg',     n:'Perspective II',    d:'Street · 2024'},
-      {f:'IMG_0604.jpg',     n:'Wide Study',        d:'Street · 2024'},
-      {f:'geometry1.jpg',    n:'Geometry I',        d:'Series · 2024'},
-      {f:'geometry2.jpg',    n:'Geometry II',       d:'Series · 2024'},
-      {f:'geomtetry3.jpg',   n:'Geometry III',      d:'Series · 2024'},
-      {f:'geometry4.jpg',    n:'Geometry IV',       d:'Series · 2024'},
+      {f:"DSC00895.JPG",n:"DSC 00895",d:"DSC · Photography"},
+      {f:"DSC00897.JPG",n:"DSC 00897",d:"DSC · Photography"},
+      {f:"DSC00899.JPG",n:"DSC 00899",d:"DSC · Photography"},
+      {f:"DSC00900.JPG",n:"DSC 00900",d:"DSC · Photography"},
+      {f:"DSC00901.JPG",n:"DSC 00901",d:"DSC · Photography"},
+      {f:"IMG_0035.jpg",n:"IMG 0035",d:"Class · 2024"},
+      {f:"IMG_0520.JPG",n:"IMG 0520",d:"Class · 2024"},
+      {f:"IMG_0573.jpg",n:"IMG 0573",d:"Class · 2024"},
+      {f:"IMG_0576.jpg",n:"IMG 0576",d:"Class · 2024"},
+      {f:"IMG_0577.jpg",n:"IMG 0577",d:"Class · 2024"},
+      {f:"IMG_0578.jpg",n:"IMG 0578",d:"Class · 2024"},
+      {f:"IMG_0580.jpg",n:"IMG 0580",d:"Class · 2024"},
+      {f:"IMG_0581.jpg",n:"IMG 0581",d:"Class · 2024"},
+      {f:"IMG_0583 (1).jpg",n:"IMG 0583 1",d:"Class · 2024"},
+      {f:"IMG_0584.jpg",n:"IMG 0584",d:"Class · 2024"},
+      {f:"IMG_0585.jpg",n:"IMG 0585",d:"Class · 2024"},
+      {f:"IMG_0586.jpg",n:"IMG 0586",d:"Class · 2024"},
+      {f:"IMG_0587.jpg",n:"IMG 0587",d:"Class · 2024"},
+      {f:"IMG_0589.jpg",n:"IMG 0589",d:"Class · 2024"},
+      {f:"IMG_0591.jpg",n:"IMG 0591",d:"Class · 2024"},
+      {f:"IMG_0593.jpg",n:"IMG 0593",d:"Class · 2024"},
+      {f:"IMG_0598.jpg",n:"IMG 0598",d:"Class · 2024"},
+      {f:"IMG_0604.jpg",n:"IMG 0604",d:"Class · 2024"},
+      {f:"Macbook_dreamy.jpeg",n:"Macbook Dreamy",d:"Photography · 2024"},
+      {f:"OS_picture2.jpg",n:"OS Picture 2",d:"Street · 2024"},
+      {f:"OS_picture3.jpg",n:"OS Picture 3",d:"Street · 2024"},
+      {f:"OS_sign4.jpg",n:"OS Sign 4",d:"Street · 2024"},
+      {f:"OSbench.jpg",n:"OS Bench",d:"Street · 2024"},
+      {f:"OSclouds.jpeg",n:"OS Clouds",d:"Street · 2024"},
+      {f:"OSdog.jpeg",n:"OS Dog",d:"Street · 2024"},
+      {f:"OSstanding.jpg",n:"OS Standing",d:"Street · 2024"},
+      {f:"Yabujin.jpeg",n:"Yabujin",d:"Photography · 2024"},
+      {f:"cars_lot.jpeg",n:"Cars Lot",d:"Photography · 2024"},
+      {f:"geometry1.jpg",n:"Geometry 1",d:"Geometry Series"},
+      {f:"geometry2.jpg",n:"Geometry 2",d:"Geometry Series"},
+      {f:"geometry4.jpg",n:"Geometry 4",d:"Geometry Series"},
+      {f:"geomtetry3.jpg",n:"Geomtetry 3",d:"Geometry Series"},
+      {f:"lot.jpeg",n:"Lot",d:"Photography · 2024"},
+      {f:"pos-process.jpeg",n:"Pos Process",d:"Photography · 2024"},
+      {f:"vending.jpeg",n:"Vending",d:"Photography · 2024"},
+      {f:"yellowdoor.jpeg",n:"Yellowdoor",d:"Photography · 2024"}
     ];
     const pwWheel=document.getElementById('photoWheel');
     const pwOrbit=document.getElementById('pwOrbit');
@@ -512,12 +526,18 @@ const TRAIL_IMAGES = [
       const PW_SPEED=0.013;
       const pwGetR=()=>{
         const w=document.getElementById('photoWheelWrap');
-        return Math.min(360,Math.max(180,(w?w.offsetWidth:window.innerWidth)*0.34));
+        const screenW=w?w.offsetWidth:window.innerWidth;
+        const minR=Math.ceil(pwN*82/(2*Math.PI));
+        return Math.max(minR,Math.min(520,screenW*0.40));
       };
       let pwR=pwGetR();
-      const pwSyncOrbit=()=>{ if(pwOrbit){pwOrbit.style.width=pwOrbit.style.height=(pwR*2)+'px';} };
-      pwSyncOrbit();
-      addEventListener('resize',()=>{ pwR=pwGetR(); pwSyncOrbit(); });
+      const pwWrap=document.getElementById('photoWheelWrap');
+      const pwSyncSize=()=>{
+        if(pwOrbit){pwOrbit.style.width=pwOrbit.style.height=(pwR*2)+'px';}
+        if(pwWrap){pwWrap.style.height=Math.max(700,pwR*2+110)+'px';}
+      };
+      pwSyncSize();
+      addEventListener('resize',()=>{ pwR=pwGetR(); pwSyncSize(); });
       pwItems.forEach(it=>{
         it.addEventListener('mouseenter',()=>pwPaused=true);
         it.addEventListener('mouseleave',()=>pwPaused=false);
