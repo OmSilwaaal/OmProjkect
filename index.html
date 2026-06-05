@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,600;0,800;1,400;1,600&family=Outfit:wght@200;300;400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   OM — single file
+   IMAGES: gallery + cursor-deck use placeholders.
+   · Gallery: replace a <figure class="ph"> inner with <img src="...">
+   · Cursor deck: fill TRAIL_IMAGES = ['a.jpg','b.jpg',...] in the script.
+   · Replace [LINKEDIN-URL] and [EMAIL] in the Info section.
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --paper:#E8E6DF;--paper-2:#DEDBD2;--ink:#16150F;--mute:#8C887C;
+  --olive:#6E7350;--olive-deep:#565A3C;
+  --sage:#CBCFB4;--blush:#E7D4CC;--sky:#CBD6D9;--sand:#E3DAC6;
+  --sans:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
+  --outfit:"Outfit","Schibsted Grotesk",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --pad:clamp(18px,4vw,52px);--ease:cubic-bezier(.76,0,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:400;opacity:.05;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+::selection{background:var(--olive);color:var(--paper)}
+
+/* ── view-transition morph ─────────────────────────────── */
+::view-transition-old(root){animation:vtOut .42s var(--ease) both}
+::view-transition-new(root){animation:vtIn .5s .04s var(--ease) both}
+@keyframes vtOut{to{opacity:0}}
+@keyframes vtIn{from{opacity:0}}
+::view-transition-group(morph){animation-duration:.6s;animation-timing-function:var(--ease)}
+::view-transition-image-pair(morph){isolation:isolate}
+::view-transition-old(morph),::view-transition-new(morph){animation-duration:.6s;animation-timing-function:var(--ease);mix-blend-mode:normal}
+.brand{view-transition-name:om-brand}
+
+/* ── header ────────────────────────────────────────────── */
+.bar{position:fixed;top:0;left:0;right:0;z-index:120;display:flex;align-items:flex-start;
+  justify-content:space-between;padding:18px var(--pad);mix-blend-mode:multiply}
+.brand{font-weight:800;font-size:15px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px;cursor:pointer}
+.brand .glyph{width:11px;height:11px;border:1.5px solid var(--ink);border-radius:50%;position:relative;display:inline-block}
+.brand .glyph::after{content:"";position:absolute;inset:2px;border-radius:50%;background:var(--ink)}
+.back{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);
+  border-bottom:1px solid transparent;padding-bottom:2px;transition:color .25s,border-color .25s}
+.back:hover{color:var(--ink);border-color:var(--ink)}
+.corner{display:flex;align-items:flex-start;gap:12px}
+.corner .spin{width:30px;height:30px;animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.corner .spin line,.corner .spin circle{stroke:var(--ink);stroke-width:1.4;stroke-linecap:round}
+.corner .ci{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--mute);text-align:right;line-height:1.7}
+.corner .ci b{color:var(--ink);font-weight:500}
+body[data-view="home"] .back{display:none}
+body:not([data-view="home"]) .corner{display:none}
+
+/* ── view system ───────────────────────────────────────── */
+.view{display:none;min-height:100vh}
+.view.active{display:block}
+.section{padding:104px var(--pad) 90px}
+.section .stagger>*{animation:up .65s var(--ease) both}
+.stagger>*:nth-child(1){animation-delay:.04s}.stagger>*:nth-child(2){animation-delay:.12s}
+.stagger>*:nth-child(3){animation-delay:.2s}.stagger>*:nth-child(4){animation-delay:.28s}
+.stagger>*:nth-child(5){animation-delay:.36s}.stagger>*:nth-child(6){animation-delay:.44s}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ── LANDING ───────────────────────────────────────────── */
+#home{height:100vh;overflow:hidden;position:relative}
+.stage{position:absolute;inset:0}
+.constellation{position:absolute;inset:0;transition:transform 1s var(--ease)}
+.cz-lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cz-lines line{stroke:rgba(22,21,15,.30);stroke-width:1.3;vector-effect:non-scaling-stroke;transition:stroke .35s,stroke-width .35s}
+.cz-lines line.hot{stroke:var(--olive);stroke-width:1.8}
+.node{position:absolute;width:0;height:0;z-index:5;will-change:transform}
+.node .hit{position:absolute;left:50%;top:50%;width:150px;height:150px;transform:translate(-50%,-50%);border-radius:50%}
+.node .dot{position:absolute;left:50%;top:50%;width:12px;height:12px;border-radius:50%;background:var(--ink);transform:translate(-50%,-50%);transition:background .3s,transform .3s}
+.node .dot::before{content:"";position:absolute;inset:-9px;border:1px solid var(--olive);border-radius:50%;opacity:0;transform:scale(.5);transition:opacity .3s,transform .4s}
+.node .lab{position:absolute;left:50%;top:50%;transform:translate(18px,-50%);display:flex;flex-direction:column;line-height:1.05;white-space:nowrap;transition:transform .3s}
+.node .idx{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--mute)}
+.node .ttl{font-weight:600;font-size:clamp(16px,1.7vw,22px);letter-spacing:-.01em;transition:color .3s}
+.node:hover{z-index:9}
+.node:hover .dot{background:var(--olive);transform:translate(-50%,-50%) scale(1.25)}
+.node:hover .dot::before{opacity:1;transform:scale(1)}
+.node:hover .ttl{color:var(--olive)}
+.node:hover .lab{transform:translate(22px,-50%)}
+.hero-cut{position:absolute;left:0;bottom:0;z-index:1;pointer-events:none;font-family:var(--outfit);font-weight:300;color:var(--olive);line-height:.8;letter-spacing:-.035em;transform:translate(-3%,8%);opacity:.95}
+.hero-cut span{display:block;font-size:clamp(64px,16.5vw,250px)}
+.hero-note{position:absolute;left:var(--pad);bottom:26px;z-index:6;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--mute);line-height:1.7;text-transform:uppercase}
+.hero-note b{color:var(--olive)}
+.home-hint{position:absolute;right:var(--pad);bottom:26px;z-index:6;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--mute);text-align:right;line-height:1.6;max-width:240px;text-transform:uppercase}
+
+/* ── cursor deck (stacked images beside cursor) ────────── */
+.trail{position:fixed;inset:0;z-index:300;pointer-events:none}
+.deck{position:fixed;left:0;top:0;will-change:transform}
+.card{position:absolute;left:0;top:0;width:clamp(108px,11vw,148px);aspect-ratio:4/5;transform-origin:bottom left;
+  opacity:0;border:1px solid var(--ink);overflow:hidden;background:var(--paper-2);
+  transition:opacity .4s ease,transform .5s var(--ease);
+  transform:translate(calc(56px + var(--i)*7px), calc(-50% - var(--i)*9px)) rotate(calc(var(--i)*-2deg)) scale(.55)}
+.card.in{opacity:1;transform:translate(calc(86px + var(--i)*7px), calc(-50% - var(--i)*9px)) rotate(calc(var(--i)*-2deg)) scale(1)}
+.card.out{opacity:0;transform:translate(calc(122px + var(--i)*7px), calc(-50% - var(--i)*9px)) rotate(calc(var(--i)*-2deg)) scale(.62)}
+.card .cap{position:absolute;left:6px;bottom:5px;font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--ink)}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card.t0{background:var(--sage)}.card.t1{background:var(--blush)}.card.t2{background:var(--sky)}.card.t3{background:var(--sand)}
+
+/* ── section components ─────────────────────────────────── */
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+.sec-head h1{font-weight:800;font-size:clamp(40px,9vw,128px);letter-spacing:-.045em;line-height:.85}
+.sec-head .num{font-family:var(--mono);font-size:11px;color:var(--olive);letter-spacing:.16em}
+.lead{font-size:clamp(17px,2vw,23px);line-height:1.45;max-width:48ch}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);margin-bottom:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,80px);margin-top:54px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr;gap:38px}}
+.body p{font-size:15.5px;line-height:1.62;margin-bottom:16px;max-width:60ch}
+.body p a{border-bottom:1px solid var(--mute);cursor:pointer;transition:color .2s,border-color .2s}
+.body p a:hover{color:var(--olive);border-color:var(--olive)}
+.index{margin-top:42px;border-top:1px solid var(--ink)}
+.row{display:grid;grid-template-columns:46px 1fr 1.6fr auto;gap:18px;align-items:baseline;padding:15px 0;border-bottom:1px solid #B6B2A4;transition:background .25s,padding .25s}
+.row:hover{background:var(--paper-2);padding-left:10px;padding-right:10px}
+.row .c-i{font-family:var(--mono);font-size:12px;color:var(--mute)}
+.row .c-t{font-weight:600;font-size:clamp(16px,2vw,21px);letter-spacing:-.01em}
+.row .c-d{color:var(--mute);font-size:14.5px;line-height:1.4}
+.row .c-y{font-family:var(--mono);font-size:12px;color:var(--mute);justify-self:end}
+.row .tag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--olive);display:inline-block;margin-top:5px}
+@media(max-width:680px){.row{grid-template-columns:34px 1fr}.row .c-d,.row .c-y{grid-column:2}.row .c-y{justify-self:start;margin-top:2px}}
+.statement{font-weight:800;letter-spacing:-.04em;line-height:.92;font-size:clamp(40px,10vw,136px);max-width:14ch;margin:6px 0 46px}
+.statement i{font-weight:400}.statement em{color:var(--olive);font-style:normal}
+.gal{columns:3 240px;column-gap:14px;margin-top:46px}
+@media(max-width:680px){.gal{columns:2 150px}}
+.ph{position:relative;break-inside:avoid;margin:0 0 14px;border:1px solid #B6B2A4;overflow:hidden;cursor:zoom-in;background:var(--paper-2);background-image:repeating-linear-gradient(135deg,transparent 0 22px,rgba(22,21,15,.022) 22px 23px);transition:filter .3s}
+.ph:hover{filter:brightness(.97)}.ph img{display:block;width:100%;height:auto}
+.ph figcaption{position:absolute;left:10px;bottom:9px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--mute);background:var(--paper);padding:2px 6px;border:1px solid #B6B2A4}
+.ph .ar{width:100%}.ph.r1 .ar{padding-top:130%}.ph.r2 .ar{padding-top:75%}.ph.r3 .ar{padding-top:100%}.ph.r4 .ar{padding-top:62%}.ph.r5 .ar{padding-top:145%}
+#lb{position:fixed;inset:0;z-index:600;background:rgba(20,19,14,.94);display:none;align-items:center;justify-content:center;cursor:zoom-out}
+#lb.open{display:flex}
+#lb .frame{max-width:80vw;max-height:80vh;border:1px solid rgba(255,255,255,.2);background:#2a2922;color:#cfcbbe;font-family:var(--mono);font-size:12px;padding:60px;letter-spacing:.1em;text-align:center}
+#lb img{max-width:80vw;max-height:80vh;display:block}
+#lb .x{position:absolute;top:22px;right:26px;color:#cfcbbe;font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+.classband{display:grid;grid-template-columns:1fr 1fr;min-height:46vh;border:1px solid var(--ink);margin-top:46px;overflow:hidden}
+@media(max-width:760px){.classband{grid-template-columns:1fr}}
+.classband .left{padding:clamp(20px,4vw,44px);display:flex;flex-direction:column;justify-content:space-between;gap:28px}
+.classband .right{background:var(--sage);position:relative;border-left:1px solid var(--ink);min-height:240px;background-image:repeating-linear-gradient(135deg,transparent 0 22px,rgba(22,21,15,.03) 22px 23px)}
+@media(max-width:760px){.classband .right{border-left:0;border-top:1px solid var(--ink)}}
+.classband .right span{position:absolute;left:12px;bottom:11px;font-family:var(--mono);font-size:10px;color:var(--ink);letter-spacing:.08em}
+.contact a.big{display:block;font-weight:800;font-size:clamp(30px,7vw,84px);letter-spacing:-.04em;line-height:1.02;border-bottom:1px solid #B6B2A4;padding:18px 0;transition:color .25s,padding-left .25s}
+.contact a.big:hover{color:var(--olive);padding-left:14px}
+.colophon{margin-top:78px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;font-family:var(--mono);font-size:11px;color:var(--mute);letter-spacing:.05em;line-height:1.7}
+.backbar{margin-top:84px;padding-top:18px;border-top:1px solid #B6B2A4;display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);gap:16px;flex-wrap:wrap}
+.backbar a{cursor:pointer}.backbar a:hover{color:var(--olive)}
+@media(max-width:560px){.node .hit{width:120px;height:120px}.hero-cut{transform:translate(-2%,6%)}}
+
+/* ── photography spinning wheel ─────────────────────────── */
+.photo-wheel-wrap{position:relative;width:100%;height:800px;display:flex;align-items:center;justify-content:center;margin-top:46px;overflow:hidden}
+.pw-orbit{position:absolute;border-radius:50%;border:1px dashed rgba(22,21,15,.12);pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%)}
+.photo-wheel{position:absolute;top:50%;left:50%;width:0;height:0}
+.pw-item{position:absolute;width:75px;height:94px;margin-left:-37px;margin-top:-47px;cursor:pointer;z-index:1}
+.pw-item:hover{z-index:50!important}
+.pw-rotor{width:100%;height:100%;will-change:transform}
+.pw-card{width:100%;height:100%;position:relative;overflow:hidden;border:1px solid rgba(22,21,15,.65);background:var(--paper-2);box-shadow:0 1px 7px rgba(22,21,15,.2);transition:transform .35s var(--ease),box-shadow .35s}
+.pw-item:hover .pw-card{transform:scale(1.7);box-shadow:0 12px 40px rgba(22,21,15,.45)}
+.pw-card img{width:100%;height:100%;object-fit:cover;display:block}
+.pw-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(14,13,9,.92) 0%,rgba(14,13,9,.3) 55%,transparent 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:6px 7px;opacity:0;transition:opacity .28s}
+.pw-item:hover .pw-overlay{opacity:1}
+.pw-name{font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--paper);line-height:1.3}
+.pw-desc{font-family:var(--mono);font-size:7px;letter-spacing:.05em;color:rgba(196,192,178,.72);margin-top:2px;line-height:1.4}
+.pw-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;border:1.5px solid var(--ink);background:var(--paper);pointer-events:none;z-index:10}
+.pw-hint{margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;text-align:center}
+</style>
+</head>
+<body data-view="home">
+
+<header class="bar">
+  <div class="brand" id="brand"><span class="glyph"></span>OM</div>
+  <a class="back" id="back">← Index</a>
+  <div class="corner">
+    <div class="ci"><div id="clock">--:--:--</div><div><b>07</b> — NODES</div></div>
+    <svg class="spin" viewBox="0 0 24 24" fill="none">
+      <line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/><line x1="18.4" y1="5.6" x2="5.6" y2="18.4"/>
+      <circle cx="12" cy="12" r="2.4"/>
+    </svg>
+  </div>
+</header>
+
+<main>
+  <!-- ═══ HOME ═══ -->
+  <section class="view active" id="home">
+    <div class="stage" id="stage">
+      <div class="hero-cut" aria-hidden="true"><span>everything</span><span>all at once</span></div>
+      <div class="hero-note">OM · AUM&nbsp;&nbsp;ॐ<br><b>the sound of everything</b> — the whole of existence</div>
+      <div class="home-hint">Select a node to enter.<br>A constellation, not a menu.</div>
+      <div class="constellation" id="cz">
+        <svg class="cz-lines" id="czLines" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+        <button class="node" data-x="22" data-y="30" data-go="about"><span class="hit"></span><span class="dot"></span><span class="lab"><span class="idx">00</span><span class="ttl">About</span></span></button>
+        <button class="node" data-x="50" data-y="20" data-go="music"><span class="hit"></span><span class="dot"></span><span class="lab"><span class="idx">01</span><span class="ttl">Music</span></span></button>
+        <button class="node" data-x="74" data-y="38" data-go="philosophy"><span class="hit"></span><span class="dot"></span><span class="lab"><span class="idx">02</span><span class="ttl">Philosophy</span></span></button>
+        <button class="node" data-x="30" data-y="62" data-go="code"><span class="hit"></span><span class="dot"></span><span class="lab"><span class="idx">03</span><span class="ttl">Code</span></span></button>
+        <button class="node" data-x="60" data-y="70" data-go="photography"><span class="hit"></span><span class="dot"></span><span class="lab"><span class="idx">04</span><span class="ttl">Photography</span></span></button>
+        <button class="node" data-x="82" data-y="64" data-go="gallery"><span class="hit"></span><span class="dot"></span><span class="lab"><span class="idx">05</span><span class="ttl">Gallery</span></span></button>
+        <button class="node" data-x="46" data-y="50" data-go="info"><span class="hit"></span><span class="dot"></span><span class="lab"><span class="idx">06</span><span class="ttl">Info</span></span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT ═══ -->
+  <section class="view section" id="about"><div class="stagger">
+    <div class="sec-head"><h1>About</h1><span class="num">00 / INDEX</span></div>
+    <p class="lead">Om — working across graphic design, art and philosophy, with a long-running practice in music and a habit of building things in code. Interested in the seams between disciplines: where a record cover is an argument, where a trading model is a kind of writing.</p>
+    <div class="grid2">
+      <div class="body"><div class="k">Practice</div>
+        <p>I treat design and code as the same act from two angles — both give form to something that didn't have one. Most of what I make starts as a question I can't stop turning over.</p>
+        <p>Visual language: brutalist, clean, deliberate. Type that knows what it's doing, space that earns its keep, nothing decorative for its own sake.</p></div>
+      <div class="body"><div class="k">Currently</div>
+        <p>Building software for non-technical people, shooting on the side, and listening to a lot of plugg. Available for collaborations and good arguments.</p></div>
+    </div>
+    <div class="backbar"><a data-go="home">← Constellation</a><span>OM — 00</span></div>
+  </div></section>
+
+  <!-- ═══ MUSIC ═══ -->
+  <section class="view section" id="music"><div class="stagger">
+    <div class="sec-head"><h1>Music</h1><span class="num">01 / SOUND</span></div>
+    <p class="lead">The records that shaped how I hear. Atmospheric, melodic, a little nocturnal — the plugg and rage corner of things, and the Swedish collective whose textures I keep returning to.</p>
+    <div class="index">
+      <div class="row"><span class="c-i">01</span><span class="c-t">fakemink</span><span class="c-d">My favorite, full stop. The melodies float over the drums weightlessly — atmospheric plugg at its most refined. Favorite track: <b>“Royal.”</b><span class="tag">Favorite / Royal</span></span><span class="c-y">PLUGG</span></div>
+      <div class="row"><span class="c-i">02</span><span class="c-t">Ecco2k</span><span class="c-d">The single biggest influence on how I think about sound and image. His processing, restraint and world-building taught me that production is design.<span class="tag">Primary inspiration</span></span><span class="c-y">DG</span></div>
+      <div class="row"><span class="c-i">03</span><span class="c-t">Drain Gang</span><span class="c-d">The collective — Bladee, Ecco2k, Thaiboy Digital with Whitearmor &amp; Yung Sherman. An entire aesthetic universe, not just a discography.<span class="tag">Collective</span></span><span class="c-y">SE</span></div>
+      <div class="row"><span class="c-i">04</span><span class="c-t">Yung Lean</span><span class="c-d">Sad Boys. The blueprint for the melancholy-internet sound much of this descends from. Pioneer.<span class="tag">Origin</span></span><span class="c-y">SE</span></div>
+      <div class="row"><span class="c-i">05</span><span class="c-t">In rotation</span><span class="c-d">feng, and a rotating cast of plugg / rage producers. <i>(edit this row to taste.)</i></span><span class="c-y">∞</span></div>
+    </div>
+    <div class="backbar"><a data-go="home">← Constellation</a><span>OM — 01</span></div>
+  </div></section>
+
+  <!-- ═══ PHILOSOPHY ═══ -->
+  <section class="view section" id="philosophy"><div class="stagger">
+    <div class="sec-head"><h1>Philosophy</h1><span class="num">02 / IDEAS</span></div>
+    <div class="statement">Nothing matters — <em>and that</em> <i>is the matter.</i></div>
+    <div class="grid2">
+      <div class="body">
+        <p>I hold a nihilism that doesn't end in despair. Yes: nothing carries meaning handed down from outside — no cosmic ledger, no built-in purpose. But I don't treat that as the conclusion. I treat it as the first fact of being alive.</p>
+        <p>That nothing matters is itself <i>a matter of life in-itself</i>. The absence of given meaning isn't a void to fall into; it's the open ground we get to build on. Meaninglessness is the condition for freedom, not its enemy.</p>
+      </div>
+      <div class="body">
+        <p>So I make things anyway — music, design, code — not because they're cosmically important, but because the making is the meaning. Value isn't discovered; it's authored. The universe's indifference is exactly what hands the pen back to you.</p>
+        <p class="eyebrow" style="margin-top:30px;line-height:1.7;color:var(--olive)">If nothing is required of you, then everything is permitted to you. That's not nothing. That's the whole thing.</p>
+      </div>
+    </div>
+    <div class="backbar"><a data-go="home">← Constellation</a><span>OM — 02</span></div>
+  </div></section>
+
+  <!-- ═══ CODE ═══ -->
+  <section class="view section" id="code"><div class="stagger">
+    <div class="sec-head"><h1>Code</h1><span class="num">03 / BUILD</span></div>
+    <p class="lead">I've been writing software for years — mostly tools that take something messy (markets, portfolios, data) and give a non-technical person a clean handle on it. A working index.</p>
+    <div class="index">
+      <div class="row"><span class="c-i">001</span><span class="c-t">TravauXus</span><span class="c-d">Personal portfolio manager — tracking, organizing and surfacing what matters across a portfolio in one place.</span><span class="c-y">2025</span></div>
+      <div class="row"><span class="c-i">002</span><span class="c-t">Tennis Betting Bot</span><span class="c-d">Automated model that ingests live tennis data and finds edges — a systems-thinking project as much as a betting one.</span><span class="c-y">2024</span></div>
+      <div class="row"><span class="c-i">003</span><span class="c-t">Solana Trading Algorithm</span><span class="c-d">Systematic on-chain trading strategy built on Solana — rules over instinct, executed automatically.</span><span class="c-y">2024</span></div>
+    </div>
+    <div class="grid2" style="margin-top:40px">
+      <div class="body"><div class="k">Approach</div><p>Bias toward small, sharp tools that do one thing without friction. If a person who doesn't code can use it and trust it, it's done.</p></div>
+      <div class="body"><div class="k">Stack</div><p style="font-family:var(--mono);font-size:13px;line-height:1.9;color:var(--mute)">Python · Rust · TypeScript<br>Solana · data pipelines · automation</p></div>
+    </div>
+    <div class="backbar"><a data-go="home">← Constellation</a><span>OM — 03</span></div>
+  </div></section>
+
+  <!-- ═══ PHOTOGRAPHY ═══ -->
+  <section class="view section" id="photography"><div class="stagger">
+    <div class="sec-head"><h1>Photography</h1><span class="num">04 / CLASS</span></div>
+    <p class="lead">A dedicated section for my photography class — the coursework, the assignments, and the way it's pushing my eye. Separate from the personal gallery, which lives one node over.</p>
+    <div class="grid2" style="margin-top:0">
+      <div><div class="k">The Class</div><p class="body" style="margin-top:6px">Formal study of composition, light and frame. Learning to slow down and shoot with intent rather than instinct — exposure, negative space, when <i>not</i> to press the shutter.</p></div>
+      <div><div class="k">Focus</div><p class="body" style="margin-top:6px">Outside of class my eye runs toward urban exploration — abandoned and forgotten spaces, decay, structure. The class gives the discipline; urbex gives the subject.</p></div>
+    </div>
+    <div class="eyebrow" style="margin-top:22px">ASSIGNMENTS · CRITIQUES · CONTACT SHEETS</div>
+    <div class="photo-wheel-wrap" id="photoWheelWrap">
+      <div class="pw-orbit" id="pwOrbit"></div>
+      <div class="photo-wheel" id="photoWheel"></div>
+      <div class="pw-hub"></div>
+    </div>
+    <p class="pw-hint">hover to pause &amp; expand · click to open</p>
+    <div class="body" style="margin-top:34px"><p>See the finished work in the <a data-go="gallery">→ Gallery</a>.</p></div>
+    <div class="backbar"><a data-go="home">← Constellation</a><span>OM — 04</span></div>
+  </div></section>
+
+  <!-- ═══ GALLERY ═══ -->
+  <section class="view section" id="gallery"><div class="stagger">
+    <div class="sec-head"><h1>Gallery</h1><span class="num">05 / URBEX</span></div>
+    <p class="lead">Urban exploration — abandoned interiors, structure, light through broken glass. A growing digital archive. (Placeholders below — drop your photos in to fill it.)</p>
+    <div class="gal" id="gal">
+      <figure class="ph r1"><div class="ar"></div><figcaption>IMG_001 · URBEX</figcaption></figure>
+      <figure class="ph r2"><div class="ar"></div><figcaption>IMG_002 · URBEX</figcaption></figure>
+      <figure class="ph r3"><div class="ar"></div><figcaption>IMG_003 · URBEX</figcaption></figure>
+      <figure class="ph r4"><div class="ar"></div><figcaption>IMG_004 · URBEX</figcaption></figure>
+      <figure class="ph r5"><div class="ar"></div><figcaption>IMG_005 · URBEX</figcaption></figure>
+      <figure class="ph r2"><div class="ar"></div><figcaption>IMG_006 · URBEX</figcaption></figure>
+      <figure class="ph r3"><div class="ar"></div><figcaption>IMG_007 · URBEX</figcaption></figure>
+      <figure class="ph r1"><div class="ar"></div><figcaption>IMG_008 · URBEX</figcaption></figure>
+      <figure class="ph r4"><div class="ar"></div><figcaption>IMG_009 · URBEX</figcaption></figure>
+    </div>
+    <div class="backbar"><a data-go="home">← Constellation</a><span>OM — 05</span></div>
+  </div></section>
+
+  <!-- ═══ INFO ═══ -->
+  <section class="view section" id="info"><div class="stagger">
+    <div class="sec-head"><h1>Info</h1><span class="num">06 / CONTACT</span></div>
+    <p class="lead">For collaborations, commissions, or to talk about any of the above.</p>
+    <div class="contact" style="margin-top:48px">
+      <a class="big" href="[LINKEDIN-URL]" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="big" href="mailto:[EMAIL]">Email ↗</a>
+    </div>
+    <div class="colophon">
+      <span>2026 © OM<br>All rights reserved.</span>
+      <span>Set in Schibsted Grotesk,<br>Outfit &amp; JetBrains Mono.</span>
+      <span>Concept: constellation index.<br>After the APES project.</span>
+    </div>
+    <div class="backbar"><a data-go="home">← Constellation</a><span>OM — 06</span></div>
+  </div></section>
+</main>
+
+<div class="trail" id="trail"></div>
+<div id="lb"><span class="x">CLOSE [ESC]</span><div class="frame" id="lbInner">NO IMAGE</div></div>
+
+<script>
+/* ── PLACEHOLDER IMAGES for the cursor deck ────────────────
+   Leave empty for styled placeholders, or fill with paths:
+   const TRAIL_IMAGES = ['t1.jpg','t2.jpg','t3.jpg','t4.jpg'];        */
+const TRAIL_IMAGES = [];
+
+(function(){
+  const views = [...document.querySelectorAll('.view')];
+  const nodeFor = id => document.querySelector('.node[data-go="'+id+'"]');
+  const ttlOf   = node => node && node.querySelector('.ttl');
+  const headOf  = id => document.querySelector('#'+id+' h1');
+  let current = 'home';
+
+  function swap(id){
+    views.forEach(v=>v.classList.toggle('active', v.id===id));
+    document.body.dataset.view = id;
+    current = id;
+    window.scrollTo(0,0);
+  }
+  // morph navigation using View Transitions (same-document = real shared element)
+  function navigate(id){
+    if(id===current) return;
+    let src, dst;
+    if(current==='home'){ src = ttlOf(nodeFor(id)); dst = headOf(id); }
+    else if(id==='home'){ src = headOf(current); dst = ttlOf(nodeFor(current)); }
+    else { src = headOf(current); dst = headOf(id); }
+    if(src) src.style.viewTransitionName='morph';
+    if(dst) dst.style.viewTransitionName='morph';
+    const clear=()=>{ if(src)src.style.viewTransitionName=''; if(dst)dst.style.viewTransitionName=''; };
+    if(document.startViewTransition){
+      document.startViewTransition(()=>swap(id)).finished.finally(clear);
+    } else { swap(id); clear(); }
+  }
+
+  document.addEventListener('click', e=>{
+    const g = e.target.closest('[data-go]');
+    if(g){ e.preventDefault(); navigate(g.dataset.go); }
+  });
+  document.getElementById('brand').addEventListener('click', ()=>navigate('home'));
+  document.getElementById('back').addEventListener('click', ()=>navigate('home'));
+
+  /* ── lightbox ─────────────────────────────────────────── */
+  const lb=document.getElementById('lb'), inner=document.getElementById('lbInner');
+  document.getElementById('gal').addEventListener('click', e=>{
+    const fig=e.target.closest('.ph'); if(!fig) return;
+    const img=fig.querySelector('img');
+    inner.innerHTML = img ? '' : 'NO IMAGE — swap this placeholder for an &lt;img&gt;';
+    if(img) inner.appendChild(img.cloneNode());
+    lb.classList.add('open');
+  });
+  lb.addEventListener('click', ()=>lb.classList.remove('open'));
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ lb.classList.remove('open'); if(current!=='home') navigate('home'); }});
+
+  /* ── nodes: drift + lines + parallax ──────────────────── */
+  const stage=document.getElementById('stage'), cz=document.getElementById('cz'), svg=document.getElementById('czLines');
+  const nodes=[...document.querySelectorAll('.node')];
+  nodes.forEach(n=>{
+    n._bx=parseFloat(n.dataset.x); n._by=parseFloat(n.dataset.y);
+    n._f1=.12+Math.random()*.18; n._f2=.07+Math.random()*.12;
+    n._p1=Math.random()*6.28;     n._p2=Math.random()*6.28;
+    n._ax=9+Math.random()*9;      n._ay=9+Math.random()*9; n._ox=0; n._oy=0;
+  });
+  const links=[[0,1],[1,2],[0,3],[3,4],[4,5],[1,6],[2,5],[6,3],[6,4],[6,2]];
+  const lineEls=links.map(([a,b])=>{const l=document.createElementNS('http://www.w3.org/2000/svg','line');l._a=nodes[a];l._b=nodes[b];svg.appendChild(l);return l;});
+  let W=stage.clientWidth,H=stage.clientHeight;
+  addEventListener('resize',()=>{W=stage.clientWidth;H=stage.clientHeight;});
+  function loop(t){
+    const s=t/1000;
+    nodes.forEach(n=>{
+      n._ox=Math.sin(s*n._f1+n._p1)*n._ax+Math.sin(s*n._f2+n._p2)*n._ax*.4;
+      n._oy=Math.cos(s*n._f1+n._p1)*n._ay+Math.cos(s*n._f2+n._p2)*n._ay*.4;
+      n.style.left=n._bx+'%'; n.style.top=n._by+'%';
+      n.style.transform=`translate(${n._ox}px,${n._oy}px)`;
+    });
+    lineEls.forEach(l=>{
+      l.setAttribute('x1', l._a._bx+l._a._ox/W*100); l.setAttribute('y1', l._a._by+l._a._oy/H*100);
+      l.setAttribute('x2', l._b._bx+l._b._ox/W*100); l.setAttribute('y2', l._b._by+l._b._oy/H*100);
+    });
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  let praf;
+  addEventListener('mousemove',e=>{
+    if(current!=='home') return;
+    cancelAnimationFrame(praf);
+    praf=requestAnimationFrame(()=>{
+      const x=(e.clientX/innerWidth-.5),y=(e.clientY/innerHeight-.5);
+      cz.style.transform=`translate(${x*-20}px,${y*-16}px)`;
+    });
+  });
+  nodes.forEach(n=>{
+    n.addEventListener('mouseenter',()=>lineEls.forEach(l=>{if(l._a===n||l._b===n)l.classList.add('hot');}));
+    n.addEventListener('mouseleave',()=>lineEls.forEach(l=>l.classList.remove('hot')));
+  });
+
+  /* ── cursor deck: images stack beside cursor ──────────── */
+  const layer=document.getElementById('trail');
+  const CAP=7, RATE=95;            // max cards in stack · ms between cards
+  let pool=0;
+  nodes.forEach(n=>{
+    const deck=document.createElement('div'); deck.className='deck'; layer.appendChild(deck);
+    let cards=[], tx=0,ty=0,x=0,y=0,raf=0,on=false,last=0;
+    const frame=()=>{ x+=(tx-x)*.2; y+=(ty-y)*.2; deck.style.transform=`translate(${x}px,${y}px)`; if(on) raf=requestAnimationFrame(frame); };
+    const reindex=()=>cards.forEach((c,i)=>c.style.setProperty('--i',i));
+    function drop(c){ c.classList.remove('in'); c.classList.add('out'); setTimeout(()=>c.remove(),520); }
+    function add(){
+      const c=document.createElement('div'); c.className='card t'+(pool%4);
+      if(TRAIL_IMAGES.length){ const im=document.createElement('img'); im.src=TRAIL_IMAGES[pool%TRAIL_IMAGES.length]; c.appendChild(im); }
+      else { const cap=document.createElement('span'); cap.className='cap'; cap.textContent='IMG_'+String(pool%24+1).padStart(2,'0'); c.appendChild(cap); }
+      pool++; deck.appendChild(c); cards.push(c); reindex();
+      requestAnimationFrame(()=>c.classList.add('in'));
+      if(cards.length>CAP) drop(cards.shift()), reindex();
+    }
+    n.addEventListener('pointerenter',e=>{ on=true; tx=x=e.clientX; ty=y=e.clientY; cancelAnimationFrame(raf); frame(); });
+    n.addEventListener('pointermove',e=>{ tx=e.clientX; ty=e.clientY; const t=performance.now(); if(t-last>RATE){ last=t; add(); }});
+    n.addEventListener('pointerleave',()=>{ on=false; cancelAnimationFrame(raf); const out=cards; cards=[]; out.forEach((c,i)=>setTimeout(()=>drop(c), i*75)); });
+  });
+
+  /* ── clock ────────────────────────────────────────────── */
+  const clock=document.getElementById('clock');
+  const tick=()=>clock.textContent=new Date().toLocaleTimeString('en-GB');
+  tick(); setInterval(tick,1000);
+
+  /* ── photography spinning wheel ──────────────────────── */
+  {
+    const PW_BASE='../Documents/apictures/';
+    const PW_PHOTOS=[
+      {f:'DSC00895.JPG',     n:'Architecture I',    d:'DSC · 2024'},
+      {f:'DSC00897.JPG',     n:'Architecture II',   d:'DSC · 2024'},
+      {f:'DSC00899.JPG',     n:'Urban Study I',     d:'DSC · 2024'},
+      {f:'DSC00900.JPG',     n:'Urban Study II',    d:'DSC · 2024'},
+      {f:'DSC00901.JPG',     n:'Urban Study III',   d:'DSC · 2024'},
+      {f:'IMG_0035.jpg',     n:'Candid I',          d:'Class · 2024'},
+      {f:'IMG_0520.JPG',     n:'Street Study',      d:'Class · 2024'},
+      {f:'IMG_0573.jpg',     n:'City Light I',      d:'Class · 2024'},
+      {f:'IMG_0576.jpg',     n:'City Light II',     d:'Class · 2024'},
+      {f:'IMG_0577.jpg',     n:'Light Study I',     d:'Urbex · 2024'},
+      {f:'IMG_0578.jpg',     n:'Light Study II',    d:'Urbex · 2024'},
+      {f:'IMG_0580.jpg',     n:'Texture I',         d:'Class · 2024'},
+      {f:'IMG_0581.jpg',     n:'Texture II',        d:'Class · 2024'},
+      {f:'IMG_0583 (1).jpg', n:'Composition I',     d:'Assignment · 2024'},
+      {f:'IMG_0584.jpg',     n:'Composition II',    d:'Assignment · 2024'},
+      {f:'IMG_0585.jpg',     n:'Composition III',   d:'Assignment · 2024'},
+      {f:'IMG_0586.jpg',     n:'Shadow Study I',    d:'Urbex · 2024'},
+      {f:'IMG_0587.jpg',     n:'Shadow Study II',   d:'Urbex · 2024'},
+      {f:'IMG_0589.jpg',     n:'Detail I',          d:'Class · 2024'},
+      {f:'IMG_0591.jpg',     n:'Detail II',         d:'Class · 2024'},
+      {f:'IMG_0593.jpg',     n:'Perspective I',     d:'Class · 2024'},
+      {f:'IMG_0598.jpg',     n:'Perspective II',    d:'Street · 2024'},
+      {f:'IMG_0604.jpg',     n:'Wide Study',        d:'Street · 2024'},
+      {f:'geometry1.jpg',    n:'Geometry I',        d:'Series · 2024'},
+      {f:'geometry2.jpg',    n:'Geometry II',       d:'Series · 2024'},
+      {f:'geomtetry3.jpg',   n:'Geometry III',      d:'Series · 2024'},
+      {f:'geometry4.jpg',    n:'Geometry IV',       d:'Series · 2024'},
+    ];
+    const pwWheel=document.getElementById('photoWheel');
+    const pwOrbit=document.getElementById('pwOrbit');
+    if(pwWheel){
+      PW_PHOTOS.forEach(p=>{
+        const it=document.createElement('div'); it.className='pw-item';
+        const ro=document.createElement('div'); ro.className='pw-rotor';
+        const ca=document.createElement('div'); ca.className='pw-card';
+        const im=document.createElement('img');
+        im.src=PW_BASE+p.f.replace(/ /g,'%20').replace(/\(/g,'%28').replace(/\)/g,'%29');
+        im.alt=p.n; im.loading='lazy';
+        const ov=document.createElement('div'); ov.className='pw-overlay';
+        ov.innerHTML='<div class="pw-name">'+p.n+'</div><div class="pw-desc">'+p.d+'</div>';
+        ca.appendChild(im); ca.appendChild(ov); ro.appendChild(ca); it.appendChild(ro); pwWheel.appendChild(it);
+        it.addEventListener('click',()=>{
+          inner.innerHTML=''; const cl=im.cloneNode(); cl.style.cssText=''; inner.appendChild(cl); lb.classList.add('open');
+        });
+      });
+      const pwItems=[...pwWheel.querySelectorAll('.pw-item')];
+      const pwN=pwItems.length;
+      let pwAngle=0, pwPaused=false, pwLast=null;
+      const PW_SPEED=0.013;
+      const pwGetR=()=>{
+        const w=document.getElementById('photoWheelWrap');
+        return Math.min(360,Math.max(180,(w?w.offsetWidth:window.innerWidth)*0.34));
+      };
+      let pwR=pwGetR();
+      const pwSyncOrbit=()=>{ if(pwOrbit){pwOrbit.style.width=pwOrbit.style.height=(pwR*2)+'px';} };
+      pwSyncOrbit();
+      addEventListener('resize',()=>{ pwR=pwGetR(); pwSyncOrbit(); });
+      pwItems.forEach(it=>{
+        it.addEventListener('mouseenter',()=>pwPaused=true);
+        it.addEventListener('mouseleave',()=>pwPaused=false);
+      });
+      const pwFrame=ts=>{
+        if(pwLast===null) pwLast=ts;
+        const dt=Math.min(ts-pwLast,100); pwLast=ts;
+        if(!pwPaused) pwAngle+=PW_SPEED*dt;
+        pwItems.forEach((it,i)=>{
+          const a=pwAngle+(360/pwN)*i;
+          const r=(a-90)*Math.PI/180;
+          const x=Math.cos(r)*pwR, y=Math.sin(r)*pwR;
+          it.style.transform='translate('+x+'px,'+y+'px) rotate('+a+'deg)';
+          it.querySelector('.pw-rotor').style.transform='rotate('+(-a)+'deg)';
+        });
+        requestAnimationFrame(pwFrame);
+      };
+      requestAnimationFrame(pwFrame);
+    }
+  }
+})();
+</script>
+</body>
+</html>
