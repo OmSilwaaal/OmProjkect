@@ -60,8 +60,8 @@ const newTrail = `[\n  ${trailPaths}\n]`;
 let html = fs.readFileSync(INDEX_HTML, 'utf8');
 
 const R_PHOTOS = /const PW_PHOTOS=\[[\s\S]*?\];/;
-// Match only the real (multiline) TRAIL_IMAGES, not the example in the comment
-const R_TRAIL  = /const TRAIL_IMAGES\s*=\s*\[[\s\S]*?\n\];/;
+// Match only the real (unindented) TRAIL_IMAGES declaration, not the comment example
+const R_TRAIL  = /^const TRAIL_IMAGES\s*=\s*\[[\s\S]*?\n\];/m;
 
 if (!R_PHOTOS.test(html)) { console.error('ERROR: PW_PHOTOS not found in index.html'); process.exit(1); }
 if (!R_TRAIL.test(html))  { console.error('ERROR: TRAIL_IMAGES not found in index.html'); process.exit(1); }
