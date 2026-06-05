@@ -160,7 +160,7 @@ body:not([data-view="home"]) .corner{display:none}
 .photo-wheel-wrap{position:relative;width:100%;height:800px;display:flex;align-items:center;justify-content:center;margin-top:46px;overflow:hidden}
 .pw-orbit{position:absolute;border-radius:50%;border:1px dashed rgba(22,21,15,.12);pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%)}
 .photo-wheel{position:absolute;top:50%;left:50%;width:0;height:0}
-.pw-item{position:absolute;width:75px;height:94px;margin-left:-37px;margin-top:-47px;cursor:pointer;z-index:1}
+.pw-item{position:absolute;width:75px;height:94px;margin-left:-37px;margin-top:-47px;cursor:pointer;z-index:1;will-change:transform}
 .pw-item:hover{z-index:50!important}
 .pw-rotor{width:100%;height:100%;will-change:transform}
 .pw-card{width:100%;height:100%;position:relative;overflow:hidden;border:1px solid rgba(22,21,15,.65);background:var(--paper-2);box-shadow:0 1px 7px rgba(22,21,15,.2);transition:transform .35s var(--ease),box-shadow .35s}
@@ -522,10 +522,10 @@ const TRAIL_IMAGES = [
         it.addEventListener('mouseenter',()=>pwPaused=true);
         it.addEventListener('mouseleave',()=>pwPaused=false);
       });
-      const pwFrame=ts=>{
+      const pwSection=document.getElementById('photography'); const pwFrame=ts=>{
         if(pwLast===null) pwLast=ts;
         const dt=Math.min(ts-pwLast,100); pwLast=ts;
-        if(!pwPaused) pwAngle+=PW_SPEED*dt;
+        const pwVisible=pwSection&&pwSection.classList.contains('active'); if(!pwVisible){ pwLast=ts; requestAnimationFrame(pwFrame); return; } if(!pwPaused) pwAngle+=PW_SPEED*dt;
         pwItems.forEach((it,i)=>{
           const a=pwAngle+(360/pwN)*i;
           const r=(a-90)*Math.PI/180;
