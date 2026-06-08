@@ -31,11 +31,9 @@ function toTitle(filename) {
 
 function toDesc(filename) {
   const f = filename.toLowerCase();
-  if (f.startsWith('dsc')) return 'DSC · Photography';
-  if (f.startsWith('geometry') || f.startsWith('geomtetry')) return 'Geometry Series';
-  if (f.startsWith('os')) return 'Street · 2024';
-  if (f.startsWith('img')) return 'Class · 2024';
-  return 'Photography · 2024';
+  if (f.startsWith('img') || f.startsWith('geometry') || f.startsWith('geomtetry')) return 'Unit 4 · Photo Challenges';
+  if (f.startsWith('os')) return 'Unit 2 · Dual Images';
+  return 'Unit 1 · Foundations';
 }
 
 const files = fs.readdirSync(APICTURES_DIR)
