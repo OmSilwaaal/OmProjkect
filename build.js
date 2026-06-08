@@ -2,8 +2,10 @@ const fs = require('fs');
 const path = require('path');
 
 const IMAGE_EXTS = /\.(jpg|jpeg|png|webp|gif|avif)$/i;
+const VIDEO_EXTS = /\.(mp4|mov|webm)$/i;
 const APICTURES_DIR = path.join(__dirname, 'apictures');
 const TRAIL_DIR = path.join(__dirname, 'pictures_moving');
+const VIDEO_DIR = path.join(__dirname, 'video');
 const INDEX_HTML = path.join(__dirname, 'index.html');
 
 function toTitle(filename) {
@@ -44,7 +46,16 @@ const entries = files.map(f =>
   `      {f:${JSON.stringify(f)},n:${JSON.stringify(toTitle(f))},d:${JSON.stringify(toDesc(f))}}`
 );
 
-const newArray = `[\n${entries.join(',\n')}\n    ]`;
+// Video entries — prepended so the play card appears early in the wheel
+const videoFiles = fs.existsSync(VIDEO_DIR)
+  ? fs.readdirSync(VIDEO_DIR).filter(f => VIDEO_EXTS.test(f) && !f.startsWith('.')).sort()
+  : [];
+const videoEntries = videoFiles.map(f =>
+  `      {f:${JSON.stringify('video/' + f)},n:"Day in the Life",d:"Unit 3 · Video",type:"video"}`
+);
+
+const allEntries = [...videoEntries, ...entries];
+const newArray = `[\n${allEntries.join(',\n')}\n    ]`;
 
 // Build TRAIL_IMAGES from pictures_moving/
 const trailFiles = fs.readdirSync(TRAIL_DIR)
@@ -71,4 +82,4 @@ const updated = html
   .replace(R_TRAIL,  `const TRAIL_IMAGES = ${newTrail};`);
 
 fs.writeFileSync(INDEX_HTML, updated);
-console.log(`✓ ${files.length} gallery photos, ${trailFiles.length} trail images written`);
+console.log(`✓ ${files.length} gallery photos, ${videoFiles.length} video(s), ${trailFiles.length} trail images written`);

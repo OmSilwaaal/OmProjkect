@@ -156,6 +156,10 @@ body:not([data-view="home"]) .corner{display:none}
 .backbar a{cursor:pointer}.backbar a:hover{color:var(--olive)}
 @media(max-width:560px){.node .hit{width:120px;height:120px}.hero-cut{transform:translate(-2%,6%)}}
 
+/* ── video wheel card ───────────────────────────────────── */
+.pw-card.pw-video{background:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pw-play{width:0;height:0;border-style:solid;border-width:13px 0 13px 21px;border-color:transparent transparent transparent var(--paper);margin-left:5px;opacity:.75;transition:opacity .25s}
+.pw-item:hover .pw-play{opacity:1}
 /* ── photography spinning wheel ─────────────────────────── */
 .photo-wheel-wrap{position:relative;width:100%;height:800px;display:flex;align-items:center;justify-content:center;margin-top:46px;overflow:hidden}
 .pw-orbit{position:absolute;border-radius:50%;border:1px dashed rgba(22,21,15,.12);pointer-events:none;top:50%;left:50%;transform:translate(-50%,-50%)}
@@ -278,18 +282,19 @@ body:not([data-view="home"]) .corner{display:none}
   <!-- ═══ PHOTOGRAPHY ═══ -->
   <section class="view section" id="photography"><div class="stagger">
     <div class="sec-head"><h1>Photography</h1><span class="num">04 / CLASS</span></div>
-    <p class="lead">A dedicated section for my photography class — the coursework, the assignments, and the way it's pushing my eye. Separate from the personal gallery, which lives one node over.</p>
-    <div class="grid2" style="margin-top:0">
-      <div><div class="k">The Class</div><p class="body" style="margin-top:6px">Formal study of composition, light and frame. Learning to slow down and shoot with intent rather than instinct — exposure, negative space, when <i>not</i> to press the shutter.</p></div>
-      <div><div class="k">Focus</div><p class="body" style="margin-top:6px">Outside of class my eye runs toward urban exploration — abandoned and forgotten spaces, decay, structure. The class gives the discipline; urbex gives the subject.</p></div>
+    <p class="lead">Four units of formal photographic study — from exposure basics to conceptual challenges. The work lives in the wheel below.</p>
+    <div class="index">
+      <div class="row"><span class="c-i">01</span><span class="c-t">Foundations</span><span class="c-d">Non-focal points and off-centred focal points — learning to place the viewer's eye with intention rather than accident. Accompanied by foundational editing in Adobe: exposure, contrast, colour grading, cropping, and knowing when the image is already done.<span class="tag">Non-focal · Off-centre · Adobe</span></span><span class="c-y">UNIT 1</span></div>
+      <div class="row"><span class="c-i">02</span><span class="c-t">Dual Images</span><span class="c-d">Two photographs placed side-by-side on a white ground. The assignment isn't the individual shot — it's finding the pattern, rhythm or tension that only appears when the two images meet each other.<span class="tag">Pattern · White Ground · Pairs</span></span><span class="c-y">UNIT 2</span></div>
+      <div class="row"><span class="c-i">03</span><span class="c-t">A Day in the Life</span><span class="c-d">A short documentary — one day, one camera, everything it caught. Shot and edited entirely within the day. Find it in the wheel below: look for the play card.<span class="tag">Video · Documentary</span></span><span class="c-y">UNIT 3</span></div>
+      <div class="row"><span class="c-i">04</span><span class="c-t">Photo Challenges</span><span class="c-d">Four constrained briefs: <i>What does sound look like?</i> &nbsp;·&nbsp; First &amp; Last Name pictures &nbsp;·&nbsp; Same colour hue &nbsp;·&nbsp; Geometric shapes — each a problem of translation, not documentation.<span class="tag">Conceptual · Challenges</span></span><span class="c-y">UNIT 4</span></div>
     </div>
-    <div class="eyebrow" style="margin-top:22px">ASSIGNMENTS · CRITIQUES · CONTACT SHEETS</div>
     <div class="photo-wheel-wrap" id="photoWheelWrap">
       <div class="pw-orbit" id="pwOrbit"></div>
       <div class="photo-wheel" id="photoWheel"></div>
       <div class="pw-hub"></div>
     </div>
-    <p class="pw-hint">hover to pause &amp; expand · click to open</p>
+    <p class="pw-hint">hover to pause &amp; expand · click image or ▶ to open</p>
     <div class="body" style="margin-top:34px"><p>See the finished work in the <a data-go="gallery">→ Gallery</a>.</p></div>
     <div class="backbar"><a data-go="home">← Constellation</a><span>OM — 04</span></div>
   </div></section>
@@ -402,7 +407,12 @@ const TRAIL_IMAGES = [
     if(img) inner.appendChild(img.cloneNode());
     lb.classList.add('open');
   });
-  lb.addEventListener('click', ()=>lb.classList.remove('open'));
+  lb.addEventListener('click', ()=>{
+    const vid=inner.querySelector('video');
+    if(vid){vid.pause();vid.src='';}
+    inner.innerHTML='';
+    lb.classList.remove('open');
+  });
   document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ lb.classList.remove('open'); if(current!=='home') navigate('home'); }});
 
   /* ── nodes: drift + lines + parallax ──────────────────── */
@@ -479,6 +489,7 @@ const TRAIL_IMAGES = [
   {
     const PW_BASE='apictures/';
     const PW_PHOTOS=[
+      {f:"video/Video-1.mov",n:"Day in the Life",d:"Unit 3 · Video",type:"video"},
       {f:"DSC00895.JPG",n:"DSC 00895",d:"DSC · Photography"},
       {f:"DSC00897.JPG",n:"DSC 00897",d:"DSC · Photography"},
       {f:"DSC00899.JPG",n:"DSC 00899",d:"DSC · Photography"},
@@ -527,16 +538,29 @@ const TRAIL_IMAGES = [
       PW_PHOTOS.forEach(p=>{
         const it=document.createElement('div'); it.className='pw-item';
         const ro=document.createElement('div'); ro.className='pw-rotor';
-        const ca=document.createElement('div'); ca.className='pw-card';
-        const im=document.createElement('img');
-        im.src=PW_BASE+p.f.replace(/ /g,'%20').replace(/\(/g,'%28').replace(/\)/g,'%29');
-        im.alt=p.n; im.loading='lazy';
-        const ov=document.createElement('div'); ov.className='pw-overlay';
-        ov.innerHTML='<div class="pw-name">'+p.n+'</div><div class="pw-desc">'+p.d+'</div>';
-        ca.appendChild(im); ca.appendChild(ov); ro.appendChild(ca); it.appendChild(ro); pwWheel.appendChild(it);
-        it.addEventListener('click',()=>{
-          inner.innerHTML=''; const cl=im.cloneNode(); cl.style.cssText=''; inner.appendChild(cl); lb.classList.add('open');
-        });
+        const isVid=p.type==='video';
+        const ca=document.createElement('div'); ca.className='pw-card'+(isVid?' pw-video':'');
+        if(isVid){
+          const play=document.createElement('div'); play.className='pw-play'; ca.appendChild(play);
+          const ov=document.createElement('div'); ov.className='pw-overlay';
+          ov.innerHTML='<div class="pw-name">'+p.n+'</div><div class="pw-desc">'+p.d+'</div>';
+          ca.appendChild(ov);
+          it.addEventListener('click',()=>{
+            inner.innerHTML='<video controls autoplay playsinline style="max-width:80vw;max-height:80vh;display:block"><source src="'+p.f+'" type="video/quicktime"><source src="'+p.f+'" type="video/mp4"></video>';
+            lb.classList.add('open');
+          });
+        } else {
+          const im=document.createElement('img');
+          im.src=PW_BASE+p.f.replace(/ /g,'%20').replace(/\(/g,'%28').replace(/\)/g,'%29');
+          im.alt=p.n; im.loading='lazy';
+          const ov=document.createElement('div'); ov.className='pw-overlay';
+          ov.innerHTML='<div class="pw-name">'+p.n+'</div><div class="pw-desc">'+p.d+'</div>';
+          ca.appendChild(im); ca.appendChild(ov);
+          it.addEventListener('click',()=>{
+            inner.innerHTML=''; const cl=im.cloneNode(); cl.style.cssText=''; inner.appendChild(cl); lb.classList.add('open');
+          });
+        }
+        ro.appendChild(ca); it.appendChild(ro); pwWheel.appendChild(it);
       });
       const pwItems=[...pwWheel.querySelectorAll('.pw-item')];
       const pwN=pwItems.length;
